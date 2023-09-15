@@ -1,0 +1,44 @@
+import { configureStore } from "@reduxjs/toolkit";
+import { setupListeners } from "@reduxjs/toolkit/dist/query";
+import adminHomeSlice, { adminHomeApi } from "./features/AdminHome/adminHomeSlice";
+import authSlice, { authApi } from "./features/Auth/authSlice";
+import cartSlice, { cartApi } from "./features/Cart/cartSlice";
+import categorySlice, { categoryApi } from "./features/Category/categorySlice";
+import orderSlice, { orderApi } from "./features/Order/orderSlice";
+import productSlice, { productApi } from "./features/Product/productSlice";
+import searchSlice, { searchApi } from "./features/Search/searchSlice";
+import userSlice, { userApi } from "./features/Users/userSlice";
+
+const store = configureStore({
+  reducer: {
+    user: userSlice,
+    [userApi.reducerPath]: userApi.reducer,
+    [authApi.reducerPath]: authApi.reducer,
+    [productApi.reducerPath]: productApi.reducer,
+    [cartApi.reducerPath]:cartApi.reducer,
+    [orderApi.reducerPath]:orderApi.reducer,
+    [categoryApi.reducerPath]:categoryApi.reducer,
+    [adminHomeApi.reducerPath]:adminHomeApi.reducer,
+    [searchApi.reducerPath]:searchApi.reducer,
+    auth: authSlice,
+    products: productSlice,
+    cart:cartSlice,
+    order:orderSlice,
+    category:categorySlice,
+    adminHome:adminHomeSlice,
+    search:searchSlice
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware()
+      .concat(userApi.middleware)
+      .concat(authApi.middleware)
+      .concat(productApi.middleware)
+      .concat(cartApi.middleware)
+      .concat(orderApi.middleware)
+      .concat(categoryApi.middleware)
+      .concat(adminHomeApi.middleware)
+      .concat(searchApi.middleware)
+});
+
+export default store;
+setupListeners(store.dispatch);
