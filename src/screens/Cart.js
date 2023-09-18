@@ -36,7 +36,9 @@ import {useCreateOrderMutation} from '../redux/features/Order/orderSlice';
 // import Toast from '../components/Toast';
 const Toast = lazy(() => import('../components/Toast'));
 
-import { getErrorText } from '../utils/globalFunctions';
+import {getErrorText} from '../utils/globalFunctions';
+import RetryComponent from '../components/RetryComponent';
+import CartListRenderItem from '../components/CartList/CartListRenderItem';
 
 const Cart = () => {
   const cartData = useSelector(state => state?.cart?.cart || []);
@@ -92,7 +94,7 @@ const Cart = () => {
     },
   ] = useCreateOrderMutation();
 
-  console.log('u7654edfghj', paymentLoader);
+  console.log('u7654edfghj', JSON.stringify(data));
 
   useEffect(() => {
     if (placeOrder) {
@@ -108,8 +110,6 @@ const Cart = () => {
       navigation.navigate('Order');
     }
   }, [isSuccess3]);
-
-
 
   const checkoutStarted = async () => {
     console.log(currentDeliveryAddressSelected);
@@ -227,32 +227,7 @@ const Cart = () => {
   }, []);
 
   const renderItem = ({item}) => {
-    if (isLoading) {
-      return <CartListSkeletonComponent />;
-    } else {
-      return (
-        <View style={styles.cartItem}>
-          <Image
-            source={{uri: item?.product?.image}}
-            style={styles.productImage}
-          />
-          <View style={styles.productDetails}>
-            <Text style={styles.productName}>{item?.product?.name}</Text>
-            <Text style={styles.productPrice}>
-              Price: &#8377;{item?.product?.price}
-            </Text>
-            <CartButton
-              item={item}
-              addToCart={addToCart}
-              removeFromCart={removeFromCart}
-            />
-            <Text style={styles.totalPrice}>
-              Total: &#8377;{item?.quantity * item?.product?.price}
-            </Text>
-          </View>
-        </View>
-      );
-    }
+   return <CartListRenderItem item={item} addToCart={addToCart} removeFromCart={removeFromCart}/>
   };
 
   const getTotalPrice = () => {
@@ -297,25 +272,32 @@ const Cart = () => {
         {isError3 && (
           <Toast visible={true} message={getErrorText(error3)} type={'error'} />
         )}
-        <FlatList
-          ListEmptyComponent={renderEmptyComponent}
-          data={
-            !isLoading
-              ? cartData
-              : [
-                  {product: {_id: 1}},
-                  {product: {_id: 2}},
-                  {product: {_id: 3}},
-                  {product: {_id: 4}},
-                  {product: {_id: 5}},
-                ]
-          }
-          keyExtractor={item => item?.product?._id}
-          renderItem={renderItem}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-          }
-        />
+
+        {isLoading ? (
+          <>
+            <CartListSkeletonComponent />
+            <CartListSkeletonComponent />
+            <CartListSkeletonComponent />
+            <CartListSkeletonComponent />
+            <CartListSkeletonComponent />
+          </>
+        ) : isError ? (
+          <RetryComponent onRetryPress={() => handleRefresh()} />
+        ) : (
+          <FlatList
+            ListEmptyComponent={renderEmptyComponent}
+            data={cartData}
+            keyExtractor={item => item?.product?._id}
+            renderItem={renderItem}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+              />
+            }
+          />
+        )}
+
         {!isLoading && cartData.length != 0 ? (
           <>
             <View style={styles.totalPriceContainer}>
@@ -385,7 +367,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 8,
-    color:"black"
+    color: 'black',
   },
   productPrice: {
     fontSize: 16,
@@ -403,7 +385,7 @@ const styles = StyleSheet.create({
   },
   quantityButtonText: {
     fontSize: 16,
-    color:"black"
+    color: 'black',
   },
   quantity: {
     fontSize: 16,
@@ -412,7 +394,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginTop: 8,
-    color:"black"
+    color: 'black',
   },
   totalPriceContainer: {
     flexDirection: 'row',
@@ -424,7 +406,7 @@ const styles = StyleSheet.create({
   totalPriceText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color:"black"
+    color: 'black',
   },
   totalPriceValue: {
     fontSize: 18,
@@ -459,7 +441,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-    color:"black"
+    color: 'black',
   },
   emptyCartButton: {
     backgroundColor: 'orange',

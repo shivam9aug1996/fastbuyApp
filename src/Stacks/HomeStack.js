@@ -50,22 +50,22 @@ const HomeStack = () => {
       <Stack.Screen
         name="EditProfile"
         component={EditProfile}
-        options={{title: ''}}
+        options={{title: '',headerBackTitle:"Back"}}
       />
       <Stack.Screen
         name="AddressList"
         component={AddressList}
-        options={{title: ''}}
+        options={{title: '',headerBackTitle:"Back"}}
       />
       <Stack.Screen
         name="AddAddress"
         component={AddAddress}
-        options={{title: ''}}
+        options={{title: '',headerBackTitle:"Back"}}
       />
       <Stack.Screen
         name="EditAddress"
         component={AddAddress}
-        options={{title: ''}}
+        options={{title: '',headerBackTitle:"Back"}}
       />
       {/* <Stack.Screen name="Home" component={Home} options={{headerShown:false}}/> */}
       <Stack.Screen
@@ -78,7 +78,7 @@ const HomeStack = () => {
         component={SearchResult}
         options={{
           title: truncateText(selectedText || selectedCategory?.name || '', 20), // Truncate to 20 characters
-          headerTitleAlign: 'center',
+         headerTitleAlign: 'center',
           headerBackTitle: 'Back',
           headerBackVisible: true,
           headerRight: () => {

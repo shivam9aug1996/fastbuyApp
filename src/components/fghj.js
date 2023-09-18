@@ -20,7 +20,7 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import ProductListSkeletonComponent from './ProductListSkeletonComponent';
 // import AddToCart from './AddToCart';
-const AddToCart = lazy(() => import('./AddToCart'));
+const AddToCart = lazy(() => import('./ProductList/AddToCart'));
 const LoaderFull = lazy(() => import('./LoaderFull'));
 // import LoaderFull from './LoaderFull';
 import {useAddToCartMutation} from '../redux/features/Cart/cartSlice';

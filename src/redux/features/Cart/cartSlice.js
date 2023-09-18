@@ -225,6 +225,7 @@ const cartSlice = createSlice({
   },
 });
 
+
 export const { setCart,resetCartSlice,setAppStartCart,triggerCheckout,setCurrentAddressSelected,setPaymentLoader } = cartSlice.actions;
 
 export const { useAddToCartMutation, useGetCartQuery,useRemoveFromCartMutation } = cartApi;

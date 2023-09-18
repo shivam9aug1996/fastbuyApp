@@ -1,7 +1,8 @@
 import React from 'react'
 import { Text } from 'react-native'
 import { useSelector } from 'react-redux'
-import ProductList from '../components/ProductList'
+import DemoFlatList from '../components/Demo/DemoFlatList'
+import ProductList from '../components/ProductList/ProductList'
 import SearchBox from '../components/SearchBox'
 
 
@@ -11,6 +12,7 @@ const SearchResult = () => {
     <>
     <SearchBox selectedText={selectedText}/>
     <ProductList/>
+    {/* <DemoFlatList/> */}
     </>
   )
 }

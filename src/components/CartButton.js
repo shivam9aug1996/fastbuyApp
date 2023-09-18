@@ -1,5 +1,5 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, { useEffect } from 'react';
+import React, { memo, useEffect } from 'react';
 import {
   useAddToCartMutation,
   useRemoveFromCartMutation,
@@ -9,7 +9,7 @@ import LoaderFull from './LoaderFull';
 
 const CartButton = ({item, removeFromCart,addToCart}) => {
   const userId = useSelector(state => state?.auth?.userData?.id);
-
+console.log("rendering4567890-",item?.product?._id)
 
   return (
     <>
@@ -44,7 +44,7 @@ const CartButton = ({item, removeFromCart,addToCart}) => {
   );
 };
 
-export default CartButton;
+export default memo(CartButton);
 
 const styles = StyleSheet.create({
   quantityControl: {

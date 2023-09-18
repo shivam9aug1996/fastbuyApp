@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import SearchBox1 from '../components/SearchBox1';
+import SearchBox1 from '../components/SearchList/SearchBox1';
 import FormWrapper from '../components/FormWrapper';
 import {
   setSelectedCategory,
@@ -15,7 +15,7 @@ import {
   setSelectedText,
   useGetSuggestionsQuery,
 } from '../redux/features/Search/searchSlice';
-import Icon from 'react-native-vector-icons/FontAwesome'; 
+
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -26,33 +26,19 @@ import {
 } from '../redux/features/Product/productSlice';
 import LoaderFull from '../components/LoaderFull';
 import NoResultComponent from '../components/NoResultComponent';
+import SearchList from '../components/SearchList/SearchList';
 
 const SearchScreen = () => {
-  const debouncedText = useSelector(state => state?.search?.debouncedText);
-  const selectedText = useSelector(state => state?.search?.selectedText);
-  const navigation = useNavigation();
-  const dispatch = useDispatch();
 
   const [searchText,setSearchText] = useState()
 
-  const {data, error, status, isLoading, isFetching, isSuccess,isError} =
-    useGetSuggestionsQuery(debouncedText);
+
 
   
 
-    // useEffect(() => {
-    //   // Automatically focus on the TextInput when the screen is in focus
-    //   if (isFocused) {
-    //     setSearchText(selectedText);
-  
-        
-    //   }
-    // }, [isFocused]);
 
 
-  const renderSeparator = () => {
-    return <View style={styles.separator} />;
-  };
+
 
 
 
@@ -62,34 +48,9 @@ const SearchScreen = () => {
         searchText={searchText}
         setSearchText={setSearchText}
       />
-      {isFetching && <LoaderFull />}
+      <SearchList/>
       
-      <FlatList
-      keyboardShouldPersistTaps={"always"}
-        data={data?.data}
-        keyExtractor={(item, index) => index.toString()}
-        keyboardDismissMode="on-drag" 
-        renderItem={({item}) => (
-          <TouchableOpacity
-            style={styles.item}
-            onPress={() => {
-              navigation.navigate('SearchResult');
-              dispatch(setSelectedText(item?.name));
-              dispatch(setSelectedCategory(null))
-             setTimeout(() => {
-              dispatch(setDebouncedText(item?.name))
-             }, 800);
-              dispatch(updatePageNumber(1));
-              dispatch(productApi.util.resetApiState());
-             
-            }}>
-            <Text style={styles.text}>{item?.name}</Text>
-            <Icon name="long-arrow-right" size={20} color="#007AFF" />
-          </TouchableOpacity>
-        )}
-        ItemSeparatorComponent={renderSeparator} 
-        ListEmptyComponent={isSuccess&&<NoResultComponent/>}
-      />
+     
     
     </>
   );

@@ -22,14 +22,14 @@ import {useDispatch, useSelector} from 'react-redux';
 import {
   productApi,
   updatePageNumber,
-} from '../redux/features/Product/productSlice';
+} from '../../redux/features/Product/productSlice';
 import {
   setSelectedCategory,
   setDebouncedText,
   setSelectedText,
   useGetSuggestionsQuery,
-} from '../redux/features/Search/searchSlice';
-import FormWrapper from './FormWrapper';
+} from '../../redux/features/Search/searchSlice';
+import FormWrapper from '../FormWrapper';
 
 const debounce = (func, delay) => {
   let timeout;
@@ -124,6 +124,7 @@ const SearchBox1 = ({searchText, setSearchText}) => {
         onChangeText={text => setSearchText(text)}
         onSubmitEditing={() => {
           if (searchText) {
+            navigation.goBack()
             navigation.navigate('SearchResult');
             dispatch(setSelectedText(searchText));
             dispatch(setSelectedCategory(null));

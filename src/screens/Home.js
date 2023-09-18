@@ -1,6 +1,6 @@
 import {View, Text, Button} from 'react-native';
 import React, {lazy, Suspense, useEffect} from 'react';
-import ProductList from '../components/ProductList';
+import ProductList from '../components/ProductList/ProductList';
 
 import {useIsFocused} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';

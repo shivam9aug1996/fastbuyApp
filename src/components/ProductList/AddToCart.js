@@ -1,15 +1,15 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {memo, useCallback, useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import {useAddToCartMutation} from '../redux/features/Cart/cartSlice';
 import {useNavigation} from '@react-navigation/native';
 
-const AddToCart = ({productId,addToCart}) => {
-  const userId = useSelector(state => state?.auth?.userData?.id);
-  const cartData = useSelector(state => state?.cart?.cart || []);
+const AddToCart = ({productId,addingToCart}) => {
+   const userId = useSelector(state => state?.auth?.userData?.id);
+   const cartData = useSelector(state => state?.cart?.cart || []);
   const [productInCart, setProductInCart] = useState(false);
   const navigation = useNavigation();
-
+  console.log("AddToCart rendering",productInCart,productId)
  
 
   useEffect(() => {
@@ -18,26 +18,21 @@ const AddToCart = ({productId,addToCart}) => {
     } else {
       setProductInCart(false);
     }
-  }, [cartData]);
+  }, [productId,cartData]);
 
-  const checkProductIsInCart = (cartData, productId) => {
+  const checkProductIsInCart = useCallback((cartData, productId) => {
     let data = cartData?.filter((item, index) => {
       return productId == item?.product?._id;
     });
     if (data?.length > 0) return true;
     else return false;
-  };
+  },[])
 
   const handlePress = () => {
     if (productInCart) {
       navigation.navigate('Cart');
     } else {
-      addToCart({
-        body: JSON.stringify({
-          productId,
-        }),
-        param: userId,
-      });
+      addingToCart(productId);
     }
   };
 
@@ -67,7 +62,7 @@ const AddToCart = ({productId,addToCart}) => {
   );
 };
 
-export default AddToCart;
+export default memo(AddToCart);
 
 const styles = StyleSheet.create({
   addToCartButton: {

@@ -158,7 +158,7 @@ const productSlice = createSlice({
     builder.addMatcher(
       productApi.endpoints.getProducts.matchFulfilled,
       (state, action) => {
-        
+        console.log("jhgfdsdfghjkl")
         let arr1;
         arr1 = state.productList || [];
         if (action?.meta?.arg?.originalArgs?.[1]?.page == 1) {

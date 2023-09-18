@@ -16,19 +16,21 @@ import {
   setProductList,
   updatePageNumber,
   useGetProductsQuery,
-} from '../redux/features/Product/productSlice';
+} from '../../redux/features/Product/productSlice';
 import {useDispatch, useSelector} from 'react-redux';
-import ProductListSkeletonComponent from './ProductListSkeletonComponent';
+import ProductListSkeletonComponent from '../ProductListSkeletonComponent';
 const AddToCart = lazy(() => import('./AddToCart'));
-const LoaderFull = lazy(() => import('./LoaderFull'));
-import {useAddToCartMutation} from '../redux/features/Cart/cartSlice';
-const Toast = lazy(() => import('./Toast'));
-import {getErrorText} from '../utils/globalFunctions';
-const RetryComponent = lazy(() => import('./RetryComponent'));
+const LoaderFull = lazy(() => import('../LoaderFull'));
+import {useAddToCartMutation} from '../../redux/features/Cart/cartSlice';
+const Toast = lazy(() => import('../Toast'));
+import {getErrorText} from '../../utils/globalFunctions';
+const RetryComponent = lazy(() => import('../RetryComponent'));
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {useIsFocused} from '@react-navigation/native';
+import ProductListRenderItem from './ProductListRenderItem';
 
 const ProductList = () => {
+  const userId = useSelector(state => state?.auth?.userData?.id);
   const selectedText = useSelector(state => state?.search?.selectedText);
   const selectedCategory = useSelector(
     state => state?.search?.selectedCategory,
@@ -121,6 +123,24 @@ const ProductList = () => {
     }
   }, [data, isFetching]);
 
+  const addingToCart = useCallback((productId)=>{
+    addToCart({
+      body: JSON.stringify({
+        productId,
+      }),
+      param: userId,
+    })
+  },[])
+  // const addingToCart = (productId)=>{
+  //   console.log(productId)
+  //   addToCart({
+  //     body: JSON.stringify({
+  //       productId,
+  //     }),
+  //     param: userId,
+  //   })
+  // }
+
   const handleRefresh = useCallback(() => {
     setRefreshing(true);
     // dispatch(setProductList([{_id: 1}, {_id: 2}, {_id: 3}, {_id: 4}, {_id: 5}]));
@@ -138,44 +158,10 @@ const ProductList = () => {
 
   console.log('67890987654erghj', data, isLoading);
 
-  const renderItem = ({item,index}) => {
-  //   return index==0?<ProductListSkeletonComponent />:  <View style={styles.productContainer}>
-  //   <Image source={{uri: item?.image}} style={styles.productImage} />
-
-  //   <Text style={styles.productName}>{item?.name}</Text>
-
-  //   <View style={styles.productInfo}>
-  //     <Text style={styles.productPrice}>Price: ₹{item?.price}</Text>
-  //   </View>
-
-  //   <TouchableOpacity onPress={() => {}} style={styles.addToCartButton}>
-  //     <Text style={styles.addToCartButtonText}>Add to Cart</Text>
-  //   </TouchableOpacity>
-  // </View>
-
-        
-
-   // return <ProductListSkeletonComponent />
-    
-    if (isFetching && pageNumber == 1) {
-      return <ProductListSkeletonComponent />;
-    } else if (isError) {
-      return <RetryComponent onRetryPress={() => handleRefresh()} />;
-    } else {
-      return (
-        <View style={styles.productContainer}>
-          <Image source={{uri: item?.image}} style={styles.productImage} />
-
-          <Text style={styles.productName}>{item?.name}</Text>
-
-          <View style={styles.productInfo}>
-            <Text style={styles.productPrice}>Price: ₹{item?.price}</Text>
-          </View>
-
-          <AddToCart productId={item?._id} addToCart={addToCart} />
-        </View>
-      );
-    }
+  const renderItem = ({item, index}) => {
+    return (
+     <ProductListRenderItem item={item} addingToCart={addingToCart}/>
+    );
   };
 
   const calculateLeftProducts = paginationData => {
@@ -187,24 +173,29 @@ const ProductList = () => {
   };
 
   const paginationLoader = () => {
-    if (data?.pagination?.currentPage < data?.pagination?.totalPages&&!isFetching) {
+    if (
+      data?.pagination?.currentPage < data?.pagination?.totalPages &&
+      !isFetching
+    ) {
       // const leftProducts = calculateLeftProducts(data?.pagination);
       // let arr = new Array(leftProducts).fill(0);
       return (
         <View style={{flex: 1, flexDirection: 'column'}}>
-           <ProductListSkeletonComponent key={1} />
+          <ProductListSkeletonComponent key={1} />
           {/* <ActivityIndicator size="small" color="orange" /> */}
           {/* {arr.map((item, index) => {
             return <ProductListSkeletonComponent key={index} />;
           })} */}
         </View>
       );
-    } else if(data?.pagination?.currentPage < data?.pagination?.totalPages&&isFetching){
+    } else if (
+      data?.pagination?.currentPage < data?.pagination?.totalPages &&
+      isFetching
+    ) {
       const leftProducts = calculateLeftProducts(data?.pagination);
       let arr = new Array(leftProducts).fill(0);
       return (
         <View style={{flex: 1, flexDirection: 'column'}}>
-          
           {/* <ActivityIndicator size="small" color="orange" /> */}
           {arr.map((item, index) => {
             return <ProductListSkeletonComponent key={index} />;
@@ -212,7 +203,7 @@ const ProductList = () => {
         </View>
       );
     }
-     {
+    {
       return null;
     }
   };
@@ -240,28 +231,39 @@ const ProductList = () => {
       )}
       {isLoading1 && <LoaderFull />}
       <View style={styles.container}>
-        <FlatList
-        // initialNumToRender={2}
-        // maxToRenderPerBatch={5}
-          // maxToRenderPerBatch={5}
-          // initialNumToRender={5}
-          data={
-            isFetching && pageNumber == 1
-              ? [{_id: 1}, {_id: 2}, {_id: 3}, {_id: 4}, {_id: 5}]
-              : isError
-              ? [{_id: 1}]
-              : productList
-          }
-          keyExtractor={item => item?._id}
-          renderItem={renderItem}
-          onEndReached={handleEndReached}
-          onEndReachedThreshold={0.3}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-          }
-          ListFooterComponent={paginationLoader} // Show the loader when isFetching is true
-          ListEmptyComponent={renderEmptyComponent}
-        />
+        {isFetching && pageNumber == 1 ? (
+          <>
+            <ProductListSkeletonComponent />
+            <ProductListSkeletonComponent />
+            <ProductListSkeletonComponent />
+            <ProductListSkeletonComponent />
+          </>
+        ) : isError ? (
+          <RetryComponent onRetryPress={() => handleRefresh()} />
+        ) : (
+          <FlatList
+            data={
+              // isFetching && pageNumber == 1
+              //   ? [{_id: 1}, {_id: 2}, {_id: 3}, {_id: 4}, {_id: 5}]
+              //   : isError
+              //   ? [{_id: 1}]
+              //   :
+              productList
+            }
+            keyExtractor={item => item?._id}
+            renderItem={renderItem}
+            onEndReached={handleEndReached}
+            onEndReachedThreshold={0.3}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+              />
+            }
+            ListFooterComponent={paginationLoader} // Show the loader when isFetching is true
+            ListEmptyComponent={renderEmptyComponent}
+          />
+        )}
       </View>
     </>
   );
@@ -348,10 +350,6 @@ const styles = StyleSheet.create({
     color: '#888',
   },
 
-
-
-  
-
   productContainer: {
     backgroundColor: 'white',
     marginBottom: 16,
@@ -369,7 +367,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
     objectFit: 'contain',
-    marginTop:16
+    marginTop: 16,
   },
 
   productName: {
