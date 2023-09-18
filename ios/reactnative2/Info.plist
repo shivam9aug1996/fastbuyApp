@@ -59,5 +59,10 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSMicrophoneUsageDescription</key>
+<string>We need access to your device's microphone to enable voice input for text conversion.</string>
+<key>NSSpeechRecognitionUsageDescription</key>
+<string>We require access to speech recognition to convert your spoken words into text for app functionality.</string>
+
 </dict>
 </plist>
